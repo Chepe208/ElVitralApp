@@ -6,40 +6,55 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.elvitralapp.ui.theme.AccentBlue
 import com.example.elvitralapp.ui.theme.DarkBackground
 import com.example.elvitralapp.ui.theme.TextPrimary
 import com.example.elvitralapp.ui.theme.TextSecondary
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController? = null, onBack: () -> Unit) {
+fun TechnicalVisitScreen(onBack: () -> Unit) {
     Scaffold(
-        containerColor = DarkBackground
+        containerColor = DarkBackground,
+        topBar = {
+            TopAppBar(
+                title = { Text("Solicitud de Visita", color = TextPrimary) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = TextPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -49,33 +64,35 @@ fun RegisterScreen(navController: NavController? = null, onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Icon(
+                imageVector = Icons.Default.Build,
+                contentDescription = null,
+                tint = AccentBlue,
+                modifier = Modifier.size(80.dp)
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "Crear Cuenta",
+                text = "Visita Técnica",
                 color = TextPrimary,
-                fontSize = 32.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
             
             Text(
-                text = "Únete a El Vitral hoy mismo",
+                text = "Déjanos tus datos y un experto te visitará para asesorarte en tu proyecto.",
                 color = TextSecondary,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 8.dp, bottom = 40.dp)
+                fontSize = 14.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            RegisterTextField(label = "Nombre completo", icon = Icons.Default.Person)
+            VisitTextField(label = "Nombre del solicitante", icon = Icons.Default.Person)
             Spacer(modifier = Modifier.height(16.dp))
-            RegisterTextField(label = "Correo electrónico", icon = Icons.Default.Email)
+            VisitTextField(label = "Teléfono de contacto", icon = Icons.Default.Phone)
             Spacer(modifier = Modifier.height(16.dp))
-            RegisterTextField(label = "Número de teléfono", icon = Icons.Default.Phone)
-            Spacer(modifier = Modifier.height(16.dp))
-            RegisterTextField(
-                label = "Contraseña", 
-                icon = Icons.Default.Lock,
-                isPassword = true
-            )
+            VisitTextField(label = "Dirección de la obra", icon = Icons.Default.LocationOn)
             
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -87,25 +104,14 @@ fun RegisterScreen(navController: NavController? = null, onBack: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Registrarse", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-
-            TextButton(
-                onClick = { navController?.navigate("login") },
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text("¿Ya tienes cuenta? Inicia sesión", color = AccentBlue)
+                Text("Enviar Solicitud", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
 @Composable
-fun RegisterTextField(
-    label: String, 
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    isPassword: Boolean = false
-) {
+fun VisitTextField(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     OutlinedTextField(
         value = "",
         onValueChange = {},
@@ -119,7 +125,6 @@ fun RegisterTextField(
             focusedTextColor = TextPrimary,
             unfocusedTextColor = TextPrimary
         ),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
         singleLine = true
     )
 }

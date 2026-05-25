@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -67,6 +68,21 @@ fun LandingPage(navController: NavController? = null) {
         ) {
             item { HeroSection() }
             item { FeaturedProjectsSection() }
+            item {
+                SectionHeader("¿Necesitas tomar medidas, instalar o hacer un mantenimiento?", "Solicita tu visita tecnica ahora!!")
+                Button(
+                    onClick = { navController?.navigate("visit") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text("Solicitar visita técnica", fontWeight = FontWeight.Bold)
+                }
+            }
             item { TestimonialsSection() }
             item { ContactSection() }
             item { Footer() }

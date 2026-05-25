@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.elvitralapp.Screens.LoginScreen
 import com.example.elvitralapp.Screens.RegisterScreen
+import com.example.elvitralapp.Screens.TechnicalVisitScreen
 import com.example.elvitralapp.ui.LandingPage
 import com.example.elvitralapp.ui.theme.ElVitralAppTheme
 
@@ -35,7 +36,10 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(onBack = { navController.popBackStack() })
                         }
                         composable("register") {
-                            RegisterScreen(onBack = { navController.popBackStack() })
+                            RegisterScreen(navController = navController, onBack = { navController.popBackStack() })
+                        }
+                        composable("visit") {
+                            TechnicalVisitScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }
