@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.elvitralapp.ui.components.Footer
 import com.example.elvitralapp.ui.components.Navbar
 import com.example.elvitralapp.ui.theme.AccentBlue
@@ -53,9 +54,9 @@ import com.example.elvitralapp.ui.theme.TextPrimary
 import com.example.elvitralapp.ui.theme.TextSecondary
 
 @Composable
-fun LandingPage() {
+fun LandingPage(navController: NavController? = null) {
     Scaffold(
-        topBar = { Navbar() },
+        topBar = { Navbar(navController) },
         containerColor = DarkBackground
     ) { paddingValues ->
         LazyColumn(
