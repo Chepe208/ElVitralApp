@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.elvitralapp.Screens.CatalogoScreen
 import com.example.elvitralapp.Screens.LoginScreen
 import com.example.elvitralapp.Screens.RegisterScreen
 import com.example.elvitralapp.Screens.TechnicalVisitScreen
+import com.example.elvitralapp.Screens.VisitManagerScreen
 import com.example.elvitralapp.ui.LandingPage
 import com.example.elvitralapp.ui.theme.ElVitralAppTheme
 
@@ -40,6 +42,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("visit") {
                             TechnicalVisitScreen(onBack = { navController.popBackStack() })
+                        }
+                        composable("catalog") {
+                            CatalogoScreen(onBack = { navController.popBackStack() })
+                        }
+                        composable("visit_manager") {
+                            VisitManagerScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }
