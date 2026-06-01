@@ -1,5 +1,6 @@
 package com.example.elvitralapp.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -57,16 +58,24 @@ fun Navbar(navController: NavController? = null) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Desktop-like links (visible if space allows, here simplified)
-                val navItems = listOf("Inicio", "Catálogo") 
-                navItems.forEach { item ->
-                    Text(
-                        text = item,
-                        color = TextPrimary,
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-                }
+                // Desktop-like links
+                Text(
+                    text = "Inicio",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .clickable { navController?.navigate("landing") }
+                )
+                
+                Text(
+                    text = "Catálogo",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .clickable { navController?.navigate("catalog") }
+                )
                 
                 Box {
                     IconButton(onClick = { showMenu = !showMenu }) {
@@ -94,6 +103,20 @@ fun Navbar(navController: NavController? = null) {
                             onClick = {
                                 showMenu = false
                                 navController?.navigate("register")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Gestión Catálogo") },
+                            onClick = {
+                                showMenu = false
+                                navController?.navigate("catalog")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Gestión Visitas") },
+                            onClick = {
+                                showMenu = false
+                                navController?.navigate("visit_manager")
                             }
                         )
                     }

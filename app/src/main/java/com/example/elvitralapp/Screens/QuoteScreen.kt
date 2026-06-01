@@ -1,11 +1,10 @@
 package com.example.elvitralapp.Screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +24,7 @@ fun QuoteScreen(onBack: () -> Unit) {
                 title = { Text("Nueva Cotización", color = TextPrimary, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Regresar", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar", tint = TextPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
@@ -159,8 +158,10 @@ fun QuoteTextField(label: String, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         placeholder = { Text(label, color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
         singleLine = true,
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = DarkBackground,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = DarkBackground,
+            unfocusedContainerColor = DarkBackground,
+            disabledContainerColor = DarkBackground,
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
