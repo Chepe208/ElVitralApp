@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -20,14 +19,18 @@ import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
 import com.example.elvitralapp.ui.theme.LocalThemeMode
 import com.example.elvitralapp.ui.theme.ThemeMode
 
-data class TechnicalVisit(
-    val id: String, val clientName: String, val phone: String,
-    val address: String, val status: String, val date: String
+data class InstallationOrder(
+    val id: String,
+    val serviceType: String,
+    val phone: String,
+    val address: String,
+    val status: String,
+    val date: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VisitManagerScreen(onBack: () -> Unit) {
+fun MyVisitsScreen(onBack: () -> Unit) {
     val themeMode    = LocalThemeMode.current
     val onCycleTheme = LocalOnCycleTheme.current
     val themeIcon = when (themeMode) {
@@ -39,11 +42,11 @@ fun VisitManagerScreen(onBack: () -> Unit) {
         ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
     }
 
-    val visits = remember {
+    val myOrders = remember {
         mutableStateListOf(
-            TechnicalVisit("1", "Juan Pérez",   "555-0123", "Av. Reforma 123",           "Pendiente",  "2023-10-25"),
-            TechnicalVisit("2", "María García", "555-4567", "Calle Juárez 45",           "En Proceso", "2023-10-26"),
-            TechnicalVisit("3", "Carlos López", "555-8901", "Blvd. Independencia 789",   "Completada", "2023-10-24")
+            InstallationOrder("VT-001", "Instalación de vidrio templado", "555-0123", "Calle 30 # 73-26, Medellín",    "Pendiente",  "2023-10-28"),
+            InstallationOrder("VT-002", "Toma de medidas",                "555-4567", "Av. El Poblado # 10-43, Medellín", "Confirmada", "2023-10-25"),
+            InstallationOrder("VT-003", "Mantenimiento de espejos",       "555-8901", "Carrera 65 # 48-12, Medellín",  "Completada", "2023-10-20")
         )
     }
 
@@ -51,8 +54,10 @@ fun VisitManagerScreen(onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Gestor de Visitas",
-                    color = MaterialTheme.colorScheme.onSurface) },
+                title = {
+                    Text("Mis Visitas",
+                        color = MaterialTheme.colorScheme.onSurface)
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver",
@@ -76,18 +81,15 @@ fun VisitManagerScreen(onBack: () -> Unit) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text("Administración de Visitas Técnicas",
+            Text("Mis Pedidos de Instalación",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(visits) { visit ->
-                    VisitItem(visit, onStatusChange = { newStatus ->
-                        val index = visits.indexOfFirst { it.id == visit.id }
-                        if (index != -1) visits[index] = visit.copy(status = newStatus)
-                    })
+                items(myOrders) { order ->
+                    MyOrderItem(order)
                 }
             }
         }
@@ -95,9 +97,7 @@ fun VisitManagerScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun VisitItem(visit: TechnicalVisit, onStatusChange: (String) -> Unit) {
-    var showMenu by remember { mutableStateOf(false) }
-
+fun MyOrderItem(order: InstallationOrder) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -110,49 +110,23 @@ fun VisitItem(visit: TechnicalVisit, onStatusChange: (String) -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(visit.clientName,
+                Text(order.serviceType,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold)
-                StatusBadge(visit.status)
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f).padding(end = 8.dp))
+                MyStatusBadge(order.status)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            InfoRow(Icons.Default.Phone,      visit.phone)
-            InfoRow(Icons.Default.LocationOn, visit.address)
-            InfoRow(Icons.Default.DateRange,  visit.date)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Box {
-                    Button(
-                        onClick = { showMenu = true },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        modifier = Modifier.height(32.dp)
-                    ) {
-                        Text("Cambiar Estado",
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 12.sp)
-                    }
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        listOf("Pendiente", "En Proceso", "Completada", "Cancelada").forEach { status ->
-                            DropdownMenuItem(
-                                text = { Text(status) },
-                                onClick = { onStatusChange(status); showMenu = false }
-                            )
-                        }
-                    }
-                }
-            }
+            MyInfoRow(Icons.Default.Phone,      order.phone)
+            MyInfoRow(Icons.Default.LocationOn, order.address)
+            MyInfoRow(Icons.Default.DateRange,  order.date)
         }
     }
 }
 
 @Composable
-fun InfoRow(icon: ImageVector, text: String) {
+fun MyInfoRow(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 2.dp)) {
         Icon(icon, null,
@@ -164,16 +138,16 @@ fun InfoRow(icon: ImageVector, text: String) {
 }
 
 @Composable
-fun StatusBadge(status: String) {
+fun MyStatusBadge(status: String) {
     val backgroundColor = when (status) {
         "Pendiente"  -> MaterialTheme.colorScheme.tertiaryContainer
-        "En Proceso" -> MaterialTheme.colorScheme.primaryContainer
+        "Confirmada" -> MaterialTheme.colorScheme.primaryContainer
         "Completada" -> MaterialTheme.colorScheme.secondaryContainer
         else         -> MaterialTheme.colorScheme.errorContainer
     }
     val textColor = when (status) {
         "Pendiente"  -> MaterialTheme.colorScheme.onTertiaryContainer
-        "En Proceso" -> MaterialTheme.colorScheme.onPrimaryContainer
+        "Confirmada" -> MaterialTheme.colorScheme.onPrimaryContainer
         "Completada" -> MaterialTheme.colorScheme.onSecondaryContainer
         else         -> MaterialTheme.colorScheme.onErrorContainer
     }
