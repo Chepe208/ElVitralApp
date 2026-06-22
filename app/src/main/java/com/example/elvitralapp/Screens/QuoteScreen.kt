@@ -5,32 +5,55 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.elvitralapp.ui.theme.*
+import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
+import com.example.elvitralapp.ui.theme.LocalThemeMode
+import com.example.elvitralapp.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuoteScreen(onBack: () -> Unit) {
+    val themeMode    = LocalThemeMode.current
+    val onCycleTheme = LocalOnCycleTheme.current
+    val themeIcon = when (themeMode) {
+        ThemeMode.DARK         -> Icons.Default.DarkMode
+        ThemeMode.LIGHT        -> Icons.Default.LightMode
+        ThemeMode.DARK_MEDIUM,
+        ThemeMode.LIGHT_MEDIUM,
+        ThemeMode.DARK_HIGH,
+        ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Cotización", color = TextPrimary, fontWeight = FontWeight.Bold) },
+                title = { Text("Nueva Cotización",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Regresar",
+                            tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
+                actions = {
+                    IconButton(onClick = onCycleTheme) {
+                        Icon(themeIcon, "Cambiar tema",
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = DarkBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -48,77 +71,61 @@ fun QuoteScreen(onBack: () -> Unit) {
                     QuoteTextField(label = "Dirección")
                 }
             }
-
             item {
                 QuoteSection(title = "Agregar productos") {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        QuoteTextField(label = "Tipo de Vidrio", modifier = Modifier.weight(1.2f))
-                        QuoteTextField(label = "Largo (cm)", modifier = Modifier.weight(0.8f))
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuoteTextField("Tipo de Vidrio", modifier = Modifier.weight(1.2f))
+                        QuoteTextField("Largo (cm)",     modifier = Modifier.weight(0.8f))
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        QuoteTextField(label = "Ancho (cm)", modifier = Modifier.weight(1f))
-                        QuoteTextField(label = "Cantidad", modifier = Modifier.weight(1f))
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuoteTextField("Ancho (cm)", modifier = Modifier.weight(1f))
+                        QuoteTextField("Cantidad",   modifier = Modifier.weight(1f))
                     }
-                    
-                    TextButton(
-                        onClick = { },
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Text(
-                            text = "Agregar Producto",
-                            color = AccentBlue,
+
+                    TextButton(onClick = { }, contentPadding = PaddingValues(0.dp)) {
+                        Text("Agregar Producto",
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+                            fontSize = 14.sp)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Productos Seleccionados",
-                        color = TextPrimary,
+                    Text("Productos Seleccionados",
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp
-                    )
-                    
-                    SelectedProductItem(
-                        name = "Vidrio Claro 3mm",
-                        details = "10x10cm x 1 und",
-                        price = "$350"
-                    )
+                        fontSize = 15.sp)
+
+                    SelectedProductItem("Vidrio Claro 3mm", "10x10cm x 1 und", "$350")
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        color = DarkBackground,
+                        color = MaterialTheme.colorScheme.surfaceContainer,
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Total:", color = TextPrimary, fontWeight = FontWeight.Bold)
-                            Text("$350", color = TextPrimary, fontWeight = FontWeight.Bold)
+                        Row(modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Total:", color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold)
+                            Text("$350",  color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold)
                         }
                     }
 
                     Button(
                         onClick = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp)
-                            .padding(top = 8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                        modifier = Modifier.fillMaxWidth().height(54.dp).padding(top = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Generar cotización", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                        Text("Generar cotización",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp)
                     }
                 }
             }
@@ -130,44 +137,38 @@ fun QuoteScreen(onBack: () -> Unit) {
 fun QuoteSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            Text(
-                text = title,
-                color = TextPrimary,
+        Column(modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text(title,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 19.sp,
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold)
             content()
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuoteTextField(label: String, modifier: Modifier = Modifier) {
     TextField(
-        value = "",
-        onValueChange = {},
+        value = "", onValueChange = {},
         modifier = modifier.fillMaxWidth(),
-        placeholder = { Text(label, color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+        placeholder = { Text(label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            fontSize = 14.sp) },
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = DarkBackground,
-            unfocusedContainerColor = DarkBackground,
-            disabledContainerColor = DarkBackground,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            cursorColor = AccentBlue,
-            focusedTextColor = TextPrimary,
-            unfocusedTextColor = TextPrimary
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = RoundedCornerShape(12.dp)
     )
@@ -175,21 +176,20 @@ fun QuoteTextField(label: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun SelectedProductItem(name: String, details: String, price: String) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = DarkBackground,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
+    Surface(modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(12.dp)) {
+        Row(modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             Column {
-                Text(text = name, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(text = details, color = TextSecondary, fontSize = 12.sp)
+                Text(name, color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(details, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp)
             }
-            Text(text = price, color = AccentBlue, fontWeight = FontWeight.Bold)
+            Text(price, color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold)
         }
     }
 }

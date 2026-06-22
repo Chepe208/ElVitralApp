@@ -30,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,18 +48,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.elvitralapp.ui.components.Footer
 import com.example.elvitralapp.ui.components.Navbar
-import com.example.elvitralapp.ui.theme.AccentBlue
-import com.example.elvitralapp.ui.theme.DarkBackground
-import com.example.elvitralapp.ui.theme.DarkSurface
+import com.example.elvitralapp.ui.theme.ThemeMode
 import com.example.elvitralapp.ui.theme.ElVitralAppTheme
-import com.example.elvitralapp.ui.theme.TextPrimary
-import com.example.elvitralapp.ui.theme.TextSecondary
 
 @Composable
-fun LandingPage(navController: NavController? = null) {
+fun LandingPage(
+    navController: NavController? = null
+) {
     Scaffold(
-        topBar = { Navbar(navController) },
-        containerColor = DarkBackground
+        topBar = {
+            Navbar(
+                navController  = navController
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -69,17 +72,26 @@ fun LandingPage(navController: NavController? = null) {
             item { HeroSection() }
             item { FeaturedProjectsSection() }
             item {
-                SectionHeader("¿Necesitas tomar medidas, instalar o hacer un mantenimiento?", "Solicita tu visita tecnica ahora!!")
+                SectionHeader(
+                    "¿Necesitas tomar medidas, instalar o hacer un mantenimiento?",
+                    "Solicita tu visita técnica ahora!!"
+                )
                 Button(
                     onClick = { navController?.navigate("visit") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 16.dp)
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Icon(
+                        Icons.Default.Build,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                     Text("Solicitar visita técnica", fontWeight = FontWeight.Bold)
                 }
             }
@@ -97,20 +109,19 @@ fun HeroSection() {
             .fillMaxWidth()
             .height(450.dp)
     ) {
-        // Simulación de la imagen de fondo con degradado (balcón/ciudad)
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF1A1C22),
-                            DarkBackground
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.background
                         )
                     )
                 )
         )
-        
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -120,7 +131,7 @@ fun HeroSection() {
         ) {
             Text(
                 text = "¿Buscando nuevas instalaciones de vidrio?",
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -128,13 +139,16 @@ fun HeroSection() {
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // Barra de búsqueda optimizada para móvil
             Surface(
-                color = DarkSurface.copy(alpha = 0.9f),
+                color = MaterialTheme.colorScheme.surfaceContainer,
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(0.5.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                    .border(
+                        0.5.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                        RoundedCornerShape(16.dp)
+                    )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -149,14 +163,16 @@ fun HeroSection() {
                         FilterItemSmall("Aplicación")
                         FilterItemSmall("Servicio")
                     }
-                    
+
                     Button(
                         onClick = { },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Buscar Proyectos", color = Color.White)
+                        Text("Buscar Proyectos", color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             }
@@ -167,11 +183,15 @@ fun HeroSection() {
 @Composable
 fun FilterItemSmall(label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = label, color = TextSecondary, fontSize = 12.sp)
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 12.sp
+        )
         Icon(
             imageVector = Icons.Default.KeyboardArrowDown,
             contentDescription = null,
-            tint = TextSecondary,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(16.dp)
         )
     }
@@ -185,23 +205,13 @@ fun FeaturedProjectsSection() {
             .padding(vertical = 48.dp, horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SectionHeader("Proyectos destacados", "Descubre nuestros últimos trabajos en cristalería")
-
-        // En móvil los apilamos para que se vean centrados y ordenados
-        ProjectCard(
-            "Fachada Comercial",
-            "Instalación de vidrio templado para centro comercial.",
-            modifier = Modifier.padding(bottom = 16.dp)
+        SectionHeader(
+            "Proyectos destacados",
+            "Descubre nuestros últimos trabajos en cristalería"
         )
-        ProjectCard(
-            "Divisiones Corporativas",
-            "Separadores de ambiente en vidrio laminado acústico.",
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        ProjectCard(
-            "Barandas Residenciales",
-            "Diseño e instalación de barandas de cristal para exteriores."
-        )
+        ProjectCard("Fachada Comercial", "Instalación de vidrio templado para centro comercial.", modifier = Modifier.padding(bottom = 16.dp))
+        ProjectCard("Divisiones Corporativas", "Separadores de ambiente en vidrio laminado acústico.", modifier = Modifier.padding(bottom = 16.dp))
+        ProjectCard("Barandas Residenciales", "Diseño e instalación de barandas de cristal para exteriores.")
     }
 }
 
@@ -209,7 +219,9 @@ fun FeaturedProjectsSection() {
 fun ProjectCard(title: String, description: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column {
@@ -217,24 +229,36 @@ fun ProjectCard(title: String, description: String, modifier: Modifier = Modifie
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(Color.Gray.copy(alpha = 0.1f)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Image, null, tint = Color.DarkGray, modifier = Modifier.size(48.dp))
+                Icon(
+                    Icons.Default.Image,
+                    null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    modifier = Modifier.size(48.dp)
+                )
             }
-            
+
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = description, color = TextSecondary, fontSize = 13.sp, lineHeight = 20.sp)
+                Text(text = description, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp, lineHeight = 20.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Ver detalles", color = AccentBlue, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Ver detalles",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = null,
-                        tint = AccentBlue,
-                        modifier = Modifier.size(14.dp).padding(start = 4.dp)
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(14.dp)
+                            .padding(start = 4.dp)
                     )
                 }
             }
@@ -251,7 +275,6 @@ fun TestimonialsSection() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SectionHeader("Lo que dicen nuestros clientes", "Reseñas reales de Google Maps")
-
         TestimonialCard("Maria González", "Excelente servicio, muy puntuales.", modifier = Modifier.padding(bottom = 12.dp))
         TestimonialCard("Carlos Rodriguez", "La calidad del vidrio es insuperable.", modifier = Modifier.padding(bottom = 12.dp))
         TestimonialCard("Ana López", "Muy profesionales en la instalación.")
@@ -262,26 +285,50 @@ fun TestimonialsSection() {
 fun TestimonialCard(name: String, comment: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
         shape = RoundedCornerShape(12.dp),
-        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.Gray.copy(alpha = 0.1f))
+        border = androidx.compose.foundation.BorderStroke(
+            0.5.dp,
+            MaterialTheme.colorScheme.outlineVariant
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(36.dp).clip(CircleShape).background(AccentBlue.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
-                    Text(name.take(1), color = AccentBlue, fontWeight = FontWeight.Bold)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        name.take(1),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-                Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
-                    Text(text = name, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text(text = "Google Review", color = TextSecondary, fontSize = 11.sp)
+                Column(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .weight(1f)
+                ) {
+                    Text(text = name, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(text = "Google Review", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("5.0", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("5.0", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFD700), modifier = Modifier.size(14.dp).padding(start = 2.dp))
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "\"$comment\"", color = TextSecondary, fontSize = 13.sp, lineHeight = 20.sp)
+            Text(
+                text = "\"$comment\"",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 13.sp,
+                lineHeight = 20.sp
+            )
         }
     }
 }
@@ -304,19 +351,22 @@ fun ContactSection() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Simulación de Mapa
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.Gray.copy(alpha = 0.1f))
-                .border(0.5.dp, Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                .border(
+                    0.5.dp,
+                    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                    RoundedCornerShape(16.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Default.Map, null, tint = TextSecondary, modifier = Modifier.size(40.dp))
-                Text("Cargando mapa...", color = TextSecondary, fontSize = 12.sp)
+                Icon(Icons.Default.Map, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
+                Text("Cargando mapa...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
         }
     }
@@ -326,14 +376,14 @@ fun ContactSection() {
 fun SectionHeader(title: String, subtitle: String) {
     Text(
         text = title,
-        color = TextPrimary,
+        color = MaterialTheme.colorScheme.onBackground,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center
     )
     Text(
         text = subtitle,
-        color = TextSecondary,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 14.sp,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
@@ -343,10 +393,15 @@ fun SectionHeader(title: String, subtitle: String) {
 @Composable
 fun ContactItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, detail: String) {
     Row(modifier = Modifier.padding(bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = null, tint = AccentBlue, modifier = Modifier.size(24.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
         Column(modifier = Modifier.padding(start = 16.dp)) {
-            Text(text = title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(text = detail, color = TextSecondary, fontSize = 13.sp)
+            Text(text = title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(text = detail, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
         }
     }
 }
@@ -354,7 +409,7 @@ fun ContactItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: St
 @Preview(showBackground = true)
 @Composable
 fun LandingPreview() {
-    ElVitralAppTheme {
+    ElVitralAppTheme(themeMode = ThemeMode.LIGHT) {
         LandingPage()
     }
 }

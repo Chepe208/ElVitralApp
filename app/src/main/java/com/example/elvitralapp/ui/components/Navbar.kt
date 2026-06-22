@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contrast
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,17 +30,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.elvitralapp.ui.theme.DarkBackground
-import com.example.elvitralapp.ui.theme.TextPrimary
+import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
+import com.example.elvitralapp.ui.theme.LocalThemeMode
+import com.example.elvitralapp.ui.theme.ThemeMode
 
 @Composable
 fun Navbar(navController: NavController? = null) {
+
+    val themeMode    = LocalThemeMode.current
+    val onCycleTheme = LocalOnCycleTheme.current
+
     var showMenu by remember { mutableStateOf(false) }
 
+    val themeIcon = when (themeMode) {
+        ThemeMode.DARK         -> Icons.Default.DarkMode
+        ThemeMode.LIGHT        -> Icons.Default.LightMode
+        ThemeMode.DARK_MEDIUM  -> Icons.Default.Contrast
+        ThemeMode.LIGHT_MEDIUM -> Icons.Default.Contrast
+        ThemeMode.DARK_HIGH    -> Icons.Default.Contrast
+        ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
+    }
+    val themeLabel = when (themeMode) {
+        ThemeMode.DARK         -> "Oscuro → Claro"
+        ThemeMode.LIGHT        -> "Claro → Oscuro MC"
+        ThemeMode.DARK_MEDIUM  -> "Oscuro MC → Claro MC"
+        ThemeMode.LIGHT_MEDIUM -> "Claro MC → Oscuro AC"
+        ThemeMode.DARK_HIGH    -> "Oscuro AC → Claro AC"
+        ThemeMode.LIGHT_HIGH   -> "Claro AC → Oscuro"
+    }
+
     Surface(
-        color = DarkBackground.copy(alpha = 0.95f),
-        modifier = Modifier.fillMaxWidth(),
-        shadowElevation = 4.dp
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 4.dp,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -45,45 +71,49 @@ fun Navbar(navController: NavController? = null) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Logo
             Text(
                 text = "EL VITRAL",
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = 1.sp
             )
 
-            // Navigation Items
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Desktop-like links
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Inicio",
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     modifier = Modifier
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 10.dp)
                         .clickable { navController?.navigate("landing") }
                 )
-                
+
                 Text(
                     text = "Catálogo",
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     modifier = Modifier
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 10.dp)
                         .clickable { navController?.navigate("catalog") }
                 )
-                
+
+                IconButton(onClick = onCycleTheme) {
+                    Icon(
+                        imageVector = themeIcon,
+                        contentDescription = themeLabel,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
                 Box {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Menu",
-                            tint = TextPrimary,
-                            modifier = Modifier.size(29.dp)
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(26.dp)
                         )
                     }
 
@@ -93,31 +123,19 @@ fun Navbar(navController: NavController? = null) {
                     ) {
                         DropdownMenuItem(
                             text = { Text("Login") },
-                            onClick = {
-                                showMenu = false
-                                navController?.navigate("login")
-                            }
+                            onClick = { showMenu = false; navController?.navigate("login") }
                         )
                         DropdownMenuItem(
                             text = { Text("Register") },
-                            onClick = {
-                                showMenu = false
-                                navController?.navigate("register")
-                            }
+                            onClick = { showMenu = false; navController?.navigate("register") }
                         )
                         DropdownMenuItem(
                             text = { Text("Gestión Catálogo") },
-                            onClick = {
-                                showMenu = false
-                                navController?.navigate("catalog")
-                            }
+                            onClick = { showMenu = false; navController?.navigate("catalog") }
                         )
                         DropdownMenuItem(
                             text = { Text("Gestión Visitas") },
-                            onClick = {
-                                showMenu = false
-                                navController?.navigate("visit_manager")
-                            }
+                            onClick = { showMenu = false; navController?.navigate("visit_manager") }
                         )
                     }
                 }
