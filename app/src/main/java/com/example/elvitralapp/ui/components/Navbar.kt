@@ -62,7 +62,9 @@ fun Navbar(navController: NavController? = null) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 4.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp) // Bajar un poco la navbar
     ) {
         Row(
             modifier = Modifier
@@ -132,6 +134,10 @@ fun Navbar(navController: NavController? = null) {
                         DropdownMenuItem(
                             text = { Text("Gestión Catálogo") },
                             onClick = { showMenu = false; navController?.navigate("catalog") }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Gestión Cotizaciones") },
+                            onClick = { showMenu = false; navController?.navigate("quote_manager") }
                         )
                         DropdownMenuItem(
                             text = { Text("Gestión Visitas") },

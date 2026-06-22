@@ -17,12 +17,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.elvitralapp.Screens.CatalogoScreen
 import com.example.elvitralapp.Screens.LoginScreen
+import com.example.elvitralapp.Screens.QuoteManagerScreen
+import com.example.elvitralapp.Screens.QuoteScreen
 import com.example.elvitralapp.Screens.RegisterScreen
 import com.example.elvitralapp.Screens.TechnicalVisitScreen
 import com.example.elvitralapp.Screens.VisitManagerScreen
 import com.example.elvitralapp.ui.LandingPage
 import com.example.elvitralapp.ui.theme.ElVitralAppTheme
 import com.example.elvitralapp.ui.theme.ThemeMode
+import com.example.elvitralapp.Screens.ForgotPasswordScreen
 import com.example.elvitralapp.Screens.MyVisitsScreen
 
 class MainActivity : ComponentActivity() {
@@ -56,7 +59,13 @@ class MainActivity : ComponentActivity() {
                             LandingPage(navController = navController)
                         }
                         composable("login") {
-                            LoginScreen(onBack = { navController.popBackStack() })
+                            LoginScreen(
+                                navController = navController,
+                                onBack = { navController.popBackStack() }
+                            )
+                        }
+                        composable("forgot_password") {
+                            ForgotPasswordScreen(onBack = { navController.popBackStack() })
                         }
                         composable("register") {
                             RegisterScreen(
@@ -69,6 +78,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("catalog") {
                             CatalogoScreen(onBack = { navController.popBackStack() })
+                        }
+                        composable("quote") {
+                            QuoteScreen(onBack = { navController.popBackStack() })
+                        }
+                        composable("quote_manager") {
+                            QuoteManagerScreen(onBack = { navController.popBackStack() })
                         }
                         composable("visit_manager") {
                             VisitManagerScreen(onBack = { navController.popBackStack() })

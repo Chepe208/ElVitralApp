@@ -15,22 +15,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.elvitralapp.data.api.RetrofitClient
+import com.example.elvitralapp.data.model.Visita
+import com.example.elvitralapp.data.repository.VisitaRepository
+import com.example.elvitralapp.data.viewmodel.ViewModelFactory
+import com.example.elvitralapp.data.viewmodel.VisitaViewModel
 import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
 import com.example.elvitralapp.ui.theme.LocalThemeMode
 import com.example.elvitralapp.ui.theme.ThemeMode
 
-data class InstallationOrder(
-    val id: String,
-    val serviceType: String,
-    val phone: String,
-    val address: String,
-    val status: String,
-    val date: String
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyVisitsScreen(onBack: () -> Unit) {
+fun MyVisitsScreen(
+    onBack: () -> Unit,
+    viewModel: VisitaViewModel = viewModel(
+        factory = ViewModelFactory(VisitaRepository(RetrofitClient.apiService))
+    )
+) {
     val themeMode    = LocalThemeMode.current
     val onCycleTheme = LocalOnCycleTheme.current
     val themeIcon = when (themeMode) {
@@ -42,13 +44,8 @@ fun MyVisitsScreen(onBack: () -> Unit) {
         ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
     }
 
-    val myOrders = remember {
-        mutableStateListOf(
-            InstallationOrder("VT-001", "Instalación de vidrio templado", "555-0123", "Calle 30 # 73-26, Medellín",    "Pendiente",  "2023-10-28"),
-            InstallationOrder("VT-002", "Toma de medidas",                "555-4567", "Av. El Poblado # 10-43, Medellín", "Confirmada", "2023-10-25"),
-            InstallationOrder("VT-003", "Mantenimiento de espejos",       "555-8901", "Carrera 65 # 48-12, Medellín",  "Completada", "2023-10-20")
-        )
-    }
+    val visitas by viewModel.visitas.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -87,9 +84,15 @@ fun MyVisitsScreen(onBack: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp))
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(myOrders) { order ->
-                    MyOrderItem(order)
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(visitas) { visita ->
+                        MyOrderItem(visita)
+                    }
                 }
             }
         }
@@ -97,7 +100,7 @@ fun MyVisitsScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun MyOrderItem(order: InstallationOrder) {
+fun MyOrderItem(visita: Visita) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -110,17 +113,17 @@ fun MyOrderItem(order: InstallationOrder) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(order.serviceType,
+                Text(visita.service,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f).padding(end = 8.dp))
-                MyStatusBadge(order.status)
+                MyStatusBadge(visita.status)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            MyInfoRow(Icons.Default.Phone,      order.phone)
-            MyInfoRow(Icons.Default.LocationOn, order.address)
-            MyInfoRow(Icons.Default.DateRange,  order.date)
+            MyInfoRow(Icons.Default.Phone,      visita.phone)
+            MyInfoRow(Icons.Default.LocationOn, visita.address)
+            MyInfoRow(Icons.Default.DateRange,  visita.date)
         }
     }
 }

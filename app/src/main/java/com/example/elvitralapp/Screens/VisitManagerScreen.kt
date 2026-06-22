@@ -16,18 +16,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.elvitralapp.data.api.RetrofitClient
+import com.example.elvitralapp.data.model.Visita
+import com.example.elvitralapp.data.repository.VisitaRepository
+import com.example.elvitralapp.data.viewmodel.ViewModelFactory
+import com.example.elvitralapp.data.viewmodel.VisitaViewModel
 import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
 import com.example.elvitralapp.ui.theme.LocalThemeMode
 import com.example.elvitralapp.ui.theme.ThemeMode
 
-data class TechnicalVisit(
-    val id: String, val clientName: String, val phone: String,
-    val address: String, val status: String, val date: String
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VisitManagerScreen(onBack: () -> Unit) {
+fun VisitManagerScreen(
+    onBack: () -> Unit,
+    viewModel: VisitaViewModel = viewModel(
+        factory = ViewModelFactory(VisitaRepository(RetrofitClient.apiService))
+    )
+) {
     val themeMode    = LocalThemeMode.current
     val onCycleTheme = LocalOnCycleTheme.current
     val themeIcon = when (themeMode) {
@@ -39,13 +45,8 @@ fun VisitManagerScreen(onBack: () -> Unit) {
         ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
     }
 
-    val visits = remember {
-        mutableStateListOf(
-            TechnicalVisit("1", "Juan Pérez",   "555-0123", "Av. Reforma 123",           "Pendiente",  "2023-10-25"),
-            TechnicalVisit("2", "María García", "555-4567", "Calle Juárez 45",           "En Proceso", "2023-10-26"),
-            TechnicalVisit("3", "Carlos López", "555-8901", "Blvd. Independencia 789",   "Completada", "2023-10-24")
-        )
-    }
+    val visitas by viewModel.visitas.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -82,12 +83,19 @@ fun VisitManagerScreen(onBack: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp))
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(visits) { visit ->
-                    VisitItem(visit, onStatusChange = { newStatus ->
-                        val index = visits.indexOfFirst { it.id == visit.id }
-                        if (index != -1) visits[index] = visit.copy(status = newStatus)
-                    })
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(visitas) { visita ->
+                        VisitItem(visita, onStatusChange = { newStatus ->
+                            visita.id?.let { id ->
+                                viewModel.updateVisita(id, visita.copy(status = newStatus))
+                            }
+                        })
+                    }
                 }
             }
         }
@@ -95,7 +103,7 @@ fun VisitManagerScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun VisitItem(visit: TechnicalVisit, onStatusChange: (String) -> Unit) {
+fun VisitItem(visit: Visita, onStatusChange: (String) -> Unit) {
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
@@ -110,7 +118,7 @@ fun VisitItem(visit: TechnicalVisit, onStatusChange: (String) -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(visit.clientName,
+                Text(visit.name,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold)

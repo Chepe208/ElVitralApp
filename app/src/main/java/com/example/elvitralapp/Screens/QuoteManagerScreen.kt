@@ -1,13 +1,13 @@
 package com.example.elvitralapp.Screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,17 +18,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.elvitralapp.data.api.RetrofitClient
 import com.example.elvitralapp.data.model.Cotizacion
-import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
-import com.example.elvitralapp.ui.theme.LocalThemeMode
-import com.example.elvitralapp.ui.theme.ThemeMode
+import com.example.elvitralapp.data.model.ProductoCotizado
+import com.example.elvitralapp.data.repository.CotizacionRepository
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuoteManagerScreen(onBack: () -> Unit) {
-    val themeMode = LocalThemeMode.current
-    val onCycleTheme = LocalOnCycleTheme.current
     val scope = rememberCoroutineScope()
+    val cotizacionRepository = remember { CotizacionRepository(RetrofitClient.apiService) }
 
     var cotizaciones by remember { mutableStateOf<List<Cotizacion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -39,9 +39,13 @@ fun QuoteManagerScreen(onBack: () -> Unit) {
             isLoading = true
             error = null
             try {
-                cotizaciones = RetrofitClient.apiService.getCotizaciones()
+                Log.d("API_MANAGER", "Iniciando carga de cotizaciones...")
+                val response = cotizacionRepository.getCotizaciones()
+                Log.d("API_MANAGER", "Respuesta recibida. Items: ${response.size}")
+                cotizaciones = response
             } catch (e: Exception) {
-                error = "Error al cargar cotizaciones: ${e.message}"
+                Log.e("API_MANAGER", "Error cargando cotizaciones: ${e.message}", e)
+                error = "Error al cargar: ${e.message}"
             } finally {
                 isLoading = false
             }
@@ -76,7 +80,12 @@ fun QuoteManagerScreen(onBack: () -> Unit) {
             }
         } else if (error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                    Button(onClick = { loadCotizaciones() }) {
+                        Text("Reintentar")
+                    }
+                }
             }
         } else if (cotizaciones.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -98,6 +107,17 @@ fun QuoteManagerScreen(onBack: () -> Unit) {
 
 @Composable
 fun QuoteCard(cotizacion: Cotizacion) {
+    val gson = Gson()
+    val productos: List<ProductoCotizado> = remember(cotizacion.productosJson) {
+        try {
+            val type = object : TypeToken<List<ProductoCotizado>>() {}.type
+            gson.fromJson(cotizacion.productosJson, type)
+        } catch (e: Exception) {
+            Log.e("QUOTE_CARD", "Error parseando productosJson: ${e.message}")
+            emptyList()
+        }
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -116,7 +136,7 @@ fun QuoteCard(cotizacion: Cotizacion) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "$${String.format("%.2f", cotizacion.total)}",
+                    text = "$${cotizacion.total}",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary
@@ -140,7 +160,7 @@ fun QuoteCard(cotizacion: Cotizacion) {
                 color = MaterialTheme.colorScheme.onSurface
             )
             
-            cotizacion.productos.forEach { prod ->
+            productos.forEach { prod ->
                 Text(
                     text = "• ${prod.nombre} (${prod.largo}x${prod.ancho}cm) x${prod.cantidad}",
                     fontSize = 13.sp,
@@ -153,7 +173,7 @@ fun QuoteCard(cotizacion: Cotizacion) {
             
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.LocationOn,
+                    imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant

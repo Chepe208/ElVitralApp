@@ -8,20 +8,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.elvitralapp.data.api.RetrofitClient
+import com.example.elvitralapp.data.model.Visita
+import com.example.elvitralapp.data.repository.VisitaRepository
+import com.example.elvitralapp.data.viewmodel.ViewModelFactory
+import com.example.elvitralapp.data.viewmodel.VisitaViewModel
 import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
 import com.example.elvitralapp.ui.theme.LocalThemeMode
 import com.example.elvitralapp.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TechnicalVisitScreen(onBack: () -> Unit) {
+fun TechnicalVisitScreen(
+    onBack: () -> Unit,
+    viewModel: VisitaViewModel = viewModel(
+        factory = ViewModelFactory(VisitaRepository(RetrofitClient.apiService))
+    )
+) {
     val themeMode    = LocalThemeMode.current
     val onCycleTheme = LocalOnCycleTheme.current
     val themeIcon = when (themeMode) {
@@ -32,6 +43,14 @@ fun TechnicalVisitScreen(onBack: () -> Unit) {
         ThemeMode.DARK_HIGH,
         ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
     }
+
+    var name by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -82,31 +101,55 @@ fun TechnicalVisitScreen(onBack: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(vertical = 16.dp))
 
-            VisitTextField("Nombre del solicitante", Icons.Default.Person)
+            VisitTextField("Nombre del solicitante", Icons.Default.Person, name) { name = it }
             Spacer(modifier = Modifier.height(16.dp))
-            VisitTextField("Teléfono de contacto",   Icons.Default.Phone)
+            VisitTextField("Teléfono de contacto",   Icons.Default.Phone, phone) { phone = it }
             Spacer(modifier = Modifier.height(16.dp))
-            VisitTextField("Dirección de la obra",   Icons.Default.LocationOn)
+            VisitTextField("Dirección de la obra",   Icons.Default.LocationOn, address) { address = it }
+            Spacer(modifier = Modifier.height(16.dp))
+            VisitTextField("Descripción del proyecto", Icons.Default.Description, description) { description = it }
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            if (error != null) {
+                Text(text = error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+            }
+
             Button(
-                onClick = { },
+                onClick = {
+                    val newVisita = Visita(
+                        name = name,
+                        phone = phone,
+                        address = address,
+                        service = "Visita Técnica",
+                        date = "", // Default or to be filled later
+                        time = "",
+                        description = description
+                    )
+                    viewModel.createVisita(newVisita) {
+                        onBack()
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
+                enabled = !isLoading && name.isNotBlank() && phone.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Enviar Solicitud", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                if (isLoading) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Enviar Solicitud", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
 }
 
 @Composable
-fun VisitTextField(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+fun VisitTextField(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
-        value = "", onValueChange = {},
+        value = value, onValueChange = onValueChange,
         label = { Text(label) },
         leadingIcon = { Icon(icon, null, tint = MaterialTheme.colorScheme.primary) },
         modifier = Modifier.fillMaxWidth(),

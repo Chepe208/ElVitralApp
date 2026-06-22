@@ -13,13 +13,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.elvitralapp.ui.theme.LocalOnCycleTheme
 import com.example.elvitralapp.ui.theme.LocalThemeMode
 import com.example.elvitralapp.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onBack: () -> Unit) {
+fun LoginScreen(navController: NavController? = null, onBack: () -> Unit) {
     val themeMode    = LocalThemeMode.current
     val onCycleTheme = LocalOnCycleTheme.current
     val themeIcon = when (themeMode) {
@@ -30,6 +31,9 @@ fun LoginScreen(onBack: () -> Unit) {
         ThemeMode.DARK_HIGH,
         ThemeMode.LIGHT_HIGH   -> Icons.Default.Contrast
     }
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -71,7 +75,7 @@ fun LoginScreen(onBack: () -> Unit) {
                 modifier = Modifier.padding(top = 8.dp, bottom = 40.dp))
 
             OutlinedTextField(
-                value = "", onValueChange = {},
+                value = email, onValueChange = { email = it },
                 label = { Text("Correo electrónico") },
                 leadingIcon = { Icon(Icons.Default.Email, null,
                     tint = MaterialTheme.colorScheme.primary) },
@@ -91,7 +95,7 @@ fun LoginScreen(onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = "", onValueChange = {},
+                value = password, onValueChange = { password = it },
                 label = { Text("Contraseña") },
                 leadingIcon = { Icon(Icons.Default.Lock, null,
                     tint = MaterialTheme.colorScheme.primary) },
@@ -109,7 +113,18 @@ fun LoginScreen(onBack: () -> Unit) {
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { navController?.navigate("forgot_password") }) {
+                    Text("¿Olvidaste tu contraseña?", 
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 14.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { },
@@ -119,6 +134,13 @@ fun LoginScreen(onBack: () -> Unit) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(onClick = { navController?.navigate("register") }) {
+                Text("¿No tienes cuenta? Regístrate", 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
