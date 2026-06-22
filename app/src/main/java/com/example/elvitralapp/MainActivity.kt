@@ -23,6 +23,7 @@ import com.example.elvitralapp.Screens.VisitManagerScreen
 import com.example.elvitralapp.ui.LandingPage
 import com.example.elvitralapp.ui.theme.ElVitralAppTheme
 import com.example.elvitralapp.ui.theme.ThemeMode
+import com.example.elvitralapp.Screens.MyVisitsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +72,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("visit_manager") {
                             VisitManagerScreen(onBack = { navController.popBackStack() })
+                        }
+                        composable("my_visits") {
+                            MyVisitsScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }

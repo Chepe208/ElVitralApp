@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -94,10 +95,35 @@ fun LandingPage(
                     )
                     Text("Solicitar visita técnica", fontWeight = FontWeight.Bold)
                 }
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = { navController?.navigate("my_visits") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        Icons.Default.DateRange,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Text(
+                        "Ver mis visitas",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
             }
             item { TestimonialsSection() }
             item { ContactSection() }
-            item { Footer() }
+            // ← navController pasado al Footer para el enlace discreto de gestión
+            item { Footer(navController = navController) }
         }
     }
 }

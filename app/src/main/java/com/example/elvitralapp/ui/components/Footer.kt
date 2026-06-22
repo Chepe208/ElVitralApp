@@ -1,6 +1,7 @@
 package com.example.elvitralapp.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -10,14 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.elvitralapp.ui.theme.DarkBackground
 import com.example.elvitralapp.ui.theme.TextPrimary
 import com.example.elvitralapp.ui.theme.TextSecondary
 
 @Composable
-fun Footer() {
+fun Footer(navController: NavController? = null) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -25,12 +28,10 @@ fun Footer() {
             .padding(horizontal = 24.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // En móvil, apilamos las secciones para que se vea ordenado y centrado
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Información de la Empresa
             Text(
                 text = "EL VITRAL",
                 color = TextPrimary,
@@ -47,10 +48,9 @@ fun Footer() {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Enlaces rápidos (Distribución en cuadrícula simple)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -73,7 +73,7 @@ fun Footer() {
         Spacer(modifier = Modifier.height(48.dp))
         HorizontalDivider(color = Color.Gray.copy(alpha = 0.2f), thickness = 1.dp)
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         Text(
             text = "© 2024 El Vitral. Todos los derechos reservados.",
             color = TextSecondary,
@@ -87,6 +87,17 @@ fun Footer() {
             fontSize = 10.sp,
             modifier = Modifier.padding(top = 4.dp),
             textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "Área de gestión",
+            color = TextSecondary.copy(alpha = 0.35f),
+            fontSize = 10.sp,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .clickable { navController?.navigate("visit_manager") }
+                .padding(4.dp)
         )
     }
 }
